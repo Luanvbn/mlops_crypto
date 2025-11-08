@@ -1,0 +1,6 @@
+# Ignorar arquivos de ambiente com chaves secretas
+.env
+
+# Outras coisas comuns do Python
+__pycache__/
+*.pyc

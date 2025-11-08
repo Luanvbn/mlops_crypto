@@ -1,0 +1,43 @@
+# Nome do seu fluxo de trabalho, como aparecerá na aba "Actions"
+name: Treinamento do Modelo de Crypto
+
+# Define quando essa Action deve rodar
+on:
+  # Roda em todo push para a branch 'main' ou 'master'
+  push:
+    branches: [ main, master ]
+  # Permite que você rode manualmente pela interface do GitHub
+  workflow_dispatch:
+
+# Define os "jobs" (tarefas) que serão executados
+jobs:
+  train-and-log:
+    # Usa a versão mais recente do Ubuntu como "máquina virtual"
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Baixa o seu código do repositório para a máquina virtual
+      - name: 1. Checkout do Repositório
+        uses: actions/checkout@v4
+
+      # 2. Configura o ambiente Python (estamos usando a versão 3.11)
+      - name: 2. Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      # 3. Instala todas as dependências do seu requirements.txt
+      - name: 3. Instalar Dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          
+      # 4. Executa o script de treinamento
+      - name: 4. Executar Treinamento e Log no DagsHub
+        run: python train_crypto.py
+        env:
+          # Injeta os segredos (que vamos configurar no Passo 3) 
+          # como variáveis de ambiente no script
+          DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+          DAGSHUB_API_KEY: ${{ secrets.DAGSHUB_API_KEY }}
+          DAGSHUB_REPO: "mlops_crypto" # Você também pode definir isso como um segredo
