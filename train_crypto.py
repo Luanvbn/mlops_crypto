@@ -1,9 +1,4 @@
 import os
-from dotenv import load_dotenv
-
-load_dotenv()
-print("Variáveis de ambiente carregadas com sucesso!")
-
 import pandas as pd
 import yfinance as yf
 import mlflow
