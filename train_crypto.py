@@ -16,8 +16,8 @@ import numpy as np
 # --- 1. Configuração do DagsHub e MLflow ---
 # SUBSTITUA com seu usuário e nome de repositório!
 DAGSHUB_USERNAME = os.getenv("DAGSHUB_USERNAME")
-DAGSHUB_TOKEN = os.getenv("DAGSHUB_API_KEY") or os.getenv("DAGSHUB_TOKEN")
-REPO_NAME = os.getenv("DAGSHUB_REPO") or "mlops_crypto"
+DAGSHUB_TOKEN = os.getenv("DAGSHUB_TOKEN")
+REPO_NAME = "mlops_crypto"
 try:
     dagshub.init(DAGSHUB_USERNAME,
                  REPO_NAME,
