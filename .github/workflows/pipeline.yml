@@ -12,32 +12,48 @@ on:
 # Define os "jobs" (tarefas) que serão executados
 jobs:
   train-and-log:
-    # Usa a versão mais recente do Ubuntu como "máquina virtual"
     runs-on: ubuntu-latest
-
     steps:
-      # 1. Baixa o seu código do repositório para a máquina virtual
+      # 1. Checkout do Repositório
       - name: 1. Checkout do Repositório
         uses: actions/checkout@v4
 
-      # 2. Configura o ambiente Python (estamos usando a versão 3.11)
+      # 2. Configurar Python
       - name: 2. Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
-      # 3. Instala todas as dependências do seu requirements.txt
+      # 3. Instalar Dependências
       - name: 3. Instalar Dependências
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           
-      # 4. Executa o script de treinamento
+      # 3.5. PASSO DE DEBUG: Verificar os Secrets
+      - name: 3.5. Verificar Variáveis de Ambiente (Debug)
+        run: |
+          echo "Usuário DagsHub (Username): $DAGSHUB_USERNAME"
+          if [ -n "$DAGSHUB_TOKEN" ]; then
+            echo "Token DagsHub (Token): ***ENCONTRADO***"
+          else
+            echo "Token DagsHub (Token): ***NÃO ENCONTRADO (verifique o nome do secret)***"
+          fi
+          if [ -n "$DAGSHUB_API_KEY" ]; then
+            echo "Token DagsHub (API Key): ***ENCONTRADO***"
+          else
+            echo "Token DagsHub (API Key): ***NÃO ENCONTRADO***"
+          fi
+        env:
+          DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
+          DAGSHUB_API_KEY: ${{ secrets.DAGSHUB_TOKEN }} # <--- Define a API_KEY
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}   # <--- Define o TOKEN
+          
+      # 4. Executar Treinamento
       - name: 4. Executar Treinamento e Log no DagsHub
         run: python train_crypto.py
         env:
-          # Injeta os segredos (que vamos configurar no Passo 3) 
-          # como variáveis de ambiente no script
           DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
-          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-          DAGSHUB_REPO: "mlops_crypto" # Você também pode definir isso como um segredo
+          DAGSHUB_API_KEY: ${{ secrets.DAGSHUB_TOKEN }} # <--- Define a API_KEY
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}   # <--- Define o TOKEN
+          DAGSHUB_REPO: "mlops_crypto"
