@@ -39,5 +39,5 @@ jobs:
           # Injeta os segredos (que vamos configurar no Passo 3) 
           # como variáveis de ambiente no script
           DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
-          DAGSHUB_API_KEY: ${{ secrets.DAGSHUB_API_KEY }}
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
           DAGSHUB_REPO: "mlops_crypto" # Você também pode definir isso como um segredo
