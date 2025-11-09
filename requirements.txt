@@ -1,6 +1,8 @@
-pandasyfinancemlflowdagshubscikit-learnnumpyjoblib
+pandas
+yfinance
 mlflow
 dagshub
 scikit-learn
 numpy
+python-dotenv
 joblib
