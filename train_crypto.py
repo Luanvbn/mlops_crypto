@@ -12,17 +12,26 @@ import numpy as np
 # SUBSTITUA com seu usuário e nome de repositório!
 DAGSHUB_USERNAME = os.getenv("DAGSHUB_USERNAME")
 DAGSHUB_TOKEN = os.getenv("DAGSHUB_TOKEN")
-REPO_NAME = "mlops_crypto"
+REPO_NAME = os.getenv("DAGSHUB_REPO", "mlops_crypto")
+
+# Configurar autenticação do MLflow para o DagsHub
+# O DagsHub usa as variáveis de ambiente do MLflow para autenticação
+os.environ['MLFLOW_TRACKING_USERNAME'] = DAGSHUB_USERNAME
+os.environ['MLFLOW_TRACKING_PASSWORD'] = DAGSHUB_TOKEN
+os.environ['MLFLOW_TRACKING_URI'] = f'https://dagshub.com/{DAGSHUB_USERNAME}/{REPO_NAME}.mlflow'
+
+print(f"Configurando MLflow Tracking URI: {os.environ['MLFLOW_TRACKING_URI']}")
+print(f"Usuário: {DAGSHUB_USERNAME}")
+
 try:
-    dagshub.init(DAGSHUB_USERNAME,
-                 REPO_NAME,
-                 url="https://dagshub.com/luanvbn/mlops_crypto.mlflow",
+    dagshub.init(repo_owner=DAGSHUB_USERNAME,
+                 repo_name=REPO_NAME,
                  mlflow=True)
     print("DagsHub inicializado com sucesso!")
 except Exception as e:
     print(f"Erro ao inicializar DagsHub: {e}")
-    print("Verifique seu nome de usuário, nome do repositório e credenciais (DAGSHUB_USERNAME, DAGSHUB_API_KEY/DAGSHUB_TOKEN).")
-    exit()
+    print("Continuando apenas com MLflow...")
+    # Não saia do script, o MLflow ainda pode funcionar com as variáveis de ambiente
 
 # --- 2. Preparação dos Dados (Série Temporal) ---
 
