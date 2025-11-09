@@ -2,36 +2,29 @@ import os
 import pandas as pd
 import yfinance as yf
 import mlflow
-import dagshub
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score
 import numpy as np
 
 # --- 1. Configuração do DagsHub e MLflow ---
-# SUBSTITUA com seu usuário e nome de repositório!
 DAGSHUB_USERNAME = os.getenv("DAGSHUB_USERNAME")
 DAGSHUB_TOKEN = os.getenv("DAGSHUB_TOKEN")
 REPO_NAME = os.getenv("DAGSHUB_REPO", "mlops_crypto")
 
-# Configurar autenticação do MLflow para o DagsHub
-# O DagsHub usa as variáveis de ambiente do MLflow para autenticação
-os.environ['MLFLOW_TRACKING_USERNAME'] = DAGSHUB_USERNAME
-os.environ['MLFLOW_TRACKING_PASSWORD'] = DAGSHUB_TOKEN
-os.environ['MLFLOW_TRACKING_URI'] = f'https://dagshub.com/{DAGSHUB_USERNAME}/{REPO_NAME}.mlflow'
+# Validar que as credenciais foram fornecidas
+if not DAGSHUB_USERNAME or not DAGSHUB_TOKEN:
+    print("❌ ERRO: DAGSHUB_USERNAME ou DAGSHUB_TOKEN não configurados!")
+    print("Configure as variáveis de ambiente antes de executar.")
+    exit(1)
 
-print(f"Configurando MLflow Tracking URI: {os.environ['MLFLOW_TRACKING_URI']}")
-print(f"Usuário: {DAGSHUB_USERNAME}")
+# Configurar MLflow Tracking URI com autenticação embutida
+tracking_uri = f'https://{DAGSHUB_USERNAME}:{DAGSHUB_TOKEN}@dagshub.com/{DAGSHUB_USERNAME}/{REPO_NAME}.mlflow'
+mlflow.set_tracking_uri(tracking_uri)
 
-try:
-    dagshub.init(repo_owner=DAGSHUB_USERNAME,
-                 repo_name=REPO_NAME,
-                 mlflow=True)
-    print("DagsHub inicializado com sucesso!")
-except Exception as e:
-    print(f"Erro ao inicializar DagsHub: {e}")
-    print("Continuando apenas com MLflow...")
-    # Não saia do script, o MLflow ainda pode funcionar com as variáveis de ambiente
+print(f"✓ MLflow configurado para: https://dagshub.com/{DAGSHUB_USERNAME}/{REPO_NAME}.mlflow")
+print(f"✓ Usuário: {DAGSHUB_USERNAME}")
+print(f"✓ Autenticação: Configurada")
 
 # --- 2. Preparação dos Dados (Série Temporal) ---
 
